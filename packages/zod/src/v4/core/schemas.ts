@@ -252,6 +252,7 @@ export const $ZodType: core.$constructor<$ZodType> = /*@__PURE__*/ core.$constru
           const _ = ch._zod.check(payload as any) as any as ParsePayload;
 
           if (_ instanceof Promise && ctx?.async === false) {
+            _.catch(() => {});
             throw new core.$ZodAsyncError();
           }
           if (asyncResult || _ instanceof Promise) {
@@ -285,7 +286,10 @@ export const $ZodType: core.$constructor<$ZodType> = /*@__PURE__*/ core.$constru
         // run checks first, then
         const checkResult = runChecks(payload, checks, ctx);
         if (checkResult instanceof Promise) {
-          if (ctx.async === false) throw new core.$ZodAsyncError();
+          if (ctx.async === false) {
+            checkResult.catch(() => {});
+            throw new core.$ZodAsyncError();
+          }
           return checkResult.then((checkResult) => inst._zod.parse(checkResult, ctx));
         }
         return inst._zod.parse(checkResult, ctx);
@@ -311,7 +315,10 @@ export const $ZodType: core.$constructor<$ZodType> = /*@__PURE__*/ core.$constru
         // forward
         const result = inst._zod.parse(payload, ctx);
         if (result instanceof Promise) {
-          if (ctx.async === false) throw new core.$ZodAsyncError();
+          if (ctx.async === false) {
+            result.catch(() => {});
+            throw new core.$ZodAsyncError();
+          }
           return result.then((result) => runChecks(result, checks, ctx));
         }
 
@@ -3932,6 +3939,7 @@ export const $ZodTransform: core.$constructor<$ZodTransform> = /*@__PURE__*/ cor
       }
 
       if (_out instanceof Promise) {
+        _out.catch(() => {});
         throw new core.$ZodAsyncError();
       }
 

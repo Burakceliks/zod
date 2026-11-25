@@ -24,6 +24,7 @@ export const _parse: (_Err: $ZodErrorClass) => $Parse = (_Err) => {
     const ctx: schemas.ParseContextInternal = _ctx ? { ..._ctx, async: false } : { async: false };
     const result = schema._zod.run({ value, issues: [] }, ctx);
     if (result instanceof Promise) {
+      result.catch(() => {});
       throw new core.$ZodAsyncError();
     }
     if (result.issues.length) {
